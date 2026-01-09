@@ -1,0 +1,203 @@
+datasource db {
+  provider = "postgresql" // Cambiamos el proveedor a PostgreSQL
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["referentialIntegrity"]
+}
+
+model User {
+  id               Int             @id @default(autoincrement())
+  email            String          @unique
+  password         String
+  firstName        String
+  lastName         String
+  genero           String
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
+  phoneNumber      String?
+  address          String?
+  age              Int?
+  resetToken       String?         @map("resettoken")
+  resetTokenExpiry DateTime?       @map("resettokenexpiry")
+  nivel            String?         // Campo existente para nivel del usuario
+  partidosAgregar Int @default(0)
+
+  profilePicture   String?         // Nueva columna para foto de perfil
+  preferredSide    String?         // Nueva columna para el lado preferido ("Izquierdo", "Derecho")
+  strengths        String[]       // Nueva columna para fortalezas
+  weaknesses       String[]       // Nueva columna para debilidades
+  progress         Float?          @default(0.0) // Nueva columna para el progreso del nivel
+
+  partidosUnidos   Int[]           // Array of IDs of Partidos_club
+  Partidos         Partidos[]      // Relación con la tabla Partidos
+  Partidos_club    Partidos_club[]
+  JugadorAbonado   JugadorAbonado[]
+  PartidosConfirmados PartidosConfirmados[] // Relación con PartidosConfirmados
+  JugadorCancelado JugadorCancelado[]
+
+
+  // Relaciones de Amistad
+  sentRequests     Friend[]        @relation("FriendSender")
+  receivedRequests Friend[]        @relation("FriendReceiver")
+  
+
+}
+
+model Friend {
+  id         Int       @id @default(autoincrement()) // Clave primaria
+  userId     Int       // Usuario que envía la solicitud
+  friendId   Int       // Usuario receptor de la solicitud
+  status     String    @default("pending") // Estado de la solicitud: pending, accepted, rejected
+  createdAt  DateTime  @default(now())     // Fecha de creación de la solicitud
+
+  // Relaciones
+  sender     User      @relation("FriendSender", fields: [userId], references: [id])
+  receiver   User      @relation("FriendReceiver", fields: [friendId], references: [id])
+}
+
+model Club {
+  id              Int             @id @default(autoincrement())
+  name            String
+  email           String          @unique
+  password        String
+  phoneNumber     String?
+  address         String?
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+  Partidos_club   Partidos_club[] // Relación con Partidos_club
+  Evento_club     Evento_club[]
+  Articulo           Articulo[]
+  MovimientoFinanciero         MovimientoFinanciero[]
+  JugadorAbonado  JugadorAbonado[]
+  PartidosConfirmados PartidosConfirmados[]
+  JugadorCancelado JugadorCancelado[]
+
+}
+
+model Partidos {
+  id         Int      @id @default(autoincrement())
+  userId     Int      // Foreign key to Users
+  fecha      DateTime @default(now())
+  jugadores  String
+  resultado  String
+  ganado     Boolean  // 1 si ganó, 0 si perdió
+  procesado  Boolean  @default(false)
+
+  User       User @relation(fields: [userId], references: [id])
+}
+
+model Partidos_club {
+  id          Int       @id @default(autoincrement())
+  date        DateTime
+  startTime   String    // Hora de inicio
+  endTime     String    // Hora de fin
+  court       String
+  players     Int       @default(0)
+  maxPlayers  Int       @default(4)
+  clubId      Int       // Foreign key to Club
+  price       Float    // Precio, que puede ser null inicialmente
+  mail24h Boolean @default(false)
+  mail12h Boolean @default(false)
+  categoria   String?  // 
+  genero      String? 
+  userId    Int?      // Nueva columna para el ID del jugador que creó el partido
+
+  usuarios    Int[]     // Array of User IDs
+  Club        Club      @relation(fields: [clubId], references: [id])
+  User      User?     @relation(fields: [userId], references: [id])  // Relación con la tabla de usuarios
+
+}
+
+model PartidosConfirmados {
+  id        Int      @id @default(autoincrement())
+  matchId   Int      @unique
+  date      DateTime
+  startTime String
+  endTime   String
+  court     String
+  usuarios    Int[]     // Array of User IDs
+  clubId    Int
+  price     Float
+  categoria String?
+  genero    String?
+  userId    Int?
+
+  // Relaciones opcionales si lo necesitás en queries
+  Club      Club     @relation(fields: [clubId], references: [id])
+  User      User?    @relation(fields: [userId], references: [id])
+}
+
+model Evento_club {
+  id           Int      @id @default(autoincrement())
+  date         DateTime
+  startTime    String
+  endTime      String
+  clubId       Int
+  nombre       String
+  tipo         String   // "torneo" o "cancha_abierta"
+  categoria    String?
+  genero       String   // "masculino", "femenino", "mixto"
+  maxParejas   Int?
+  formato      String?  // solo si tipo = "torneo": "grupos" o "eliminacion"
+  parejas      String[] // nombres de las parejas inscriptas
+  inscripciones Json? @default("[]")
+  price        Float
+
+  Club         Club     @relation(fields: [clubId], references: [id])
+}
+
+model Articulo {
+  id            Int      @id @default(autoincrement())
+  codigo        String
+  nombre        String
+  precioCompra  Float
+  precioVenta   Float
+  tipo          String
+  cantidadStock Int?
+  updatedAt     DateTime @updatedAt
+  clubId        Int
+  Club          Club     @relation(fields: [clubId], references: [id])
+}
+
+
+model MovimientoFinanciero {
+  id              Int      @id @default(autoincrement())
+  concepto        String
+  jugador         String?
+  cancha          String?
+  fechaTurno      DateTime?
+  fechaMovimiento DateTime?  // <-- acá lo cambiamos a opcional
+  metodoPago      String
+  egreso          Float?
+  ingreso         Float?
+  clubId          Int
+  Club            Club     @relation(fields: [clubId], references: [id])
+}
+
+model JugadorAbonado {
+  id       Int   @id @default(autoincrement())
+  clubId   Int
+  userId   Int
+
+  Club     Club @relation(fields: [clubId], references: [id])
+  User     User @relation(fields: [userId], references: [id])
+
+  @@unique([clubId, userId]) // Evita duplicados
+}
+
+model JugadorCancelado {
+  id                     Int      @id @default(autoincrement())
+  userId                 Int
+  clubId                 Int
+  cantidadCancelaciones  Int      @default(1)
+  ultimaCancelacion      DateTime
+
+  user   User  @relation(fields: [userId], references: [id])
+  club   Club  @relation(fields: [clubId], references: [id])
+
+  @@unique([userId, clubId])
+}
+
