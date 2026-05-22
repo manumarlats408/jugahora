@@ -20,9 +20,17 @@ The project was developed with a focus on user experience, scalability and real-
 
 Next.js · TypeScript · Node.js · Prisma · Tailwind CSS · PostgreSQL
 
-## Application Preview
+## Dashboard Preview
 
-![Preview](assets/jugahora_preview.png)
+![Dashboard](assets/dashboard.png)
+
+## Match Management
+
+![Match Management](assets/match_management.png)
+
+## Financial Dashboard
+
+![Financial Dashboard](assets/financial_dashboard.png)
 
 ## Status
 
