@@ -1,25 +1,29 @@
-# Jugahora – Plataforma web para jugadores de pádel
+# Jugahora
 
-Jugahora es una plataforma web diseñada para conectar jugadores y clubes de pádel, facilitando la organización de partidos según el nivel de cada jugador.
+Web platform designed to connect padel players and clubs based on skill level and availability.
 
-## Descripción
-El proyecto simplifica el proceso de encontrar compañeros de juego compatibles, optimizando la coordinación de partidos y fomentando la interacción dentro de la comunidad de pádel en Argentina.
+## Overview
 
-Jugahora fue desarrollado con un enfoque en experiencia de usuario, organización de la información y escalabilidad, aportando una solución digital a una problemática real del ámbito deportivo.
+Jugahora simplifies match organization by helping players find compatible partners and available clubs, improving coordination and accessibility within the padel community.
 
-## Funcionalidades principales
-- Registro y perfil de jugadores
-- Organización de partidos según nivel de juego
-- Conexión entre jugadores y clubes
-- Gestión de partidas y notificaciones
+The project was developed with a focus on user experience, scalability and real-world usability.
 
-## Tecnologías utilizadas
-- Next.js
-- TypeScript
-- Node.js
-- Prisma
-- Tailwind CSS
-- Git y GitHub
+## Features
 
-## Estado del proyecto
-Proyecto funcional desarrollado como iniciativa personal / académica.
+- Player registration and profiles
+- Match organization by skill level
+- Club and player matchmaking
+- Availability management
+- Responsive web interface
+
+## Technologies
+
+Next.js · TypeScript · Node.js · Prisma · Tailwind CSS · PostgreSQL
+
+## Application Preview
+
+![Preview](assets/jugahora_preview.png)
+
+## Status
+
+Functional full-stack web application developed as a personal project.
